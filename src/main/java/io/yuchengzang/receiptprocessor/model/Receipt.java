@@ -91,6 +91,9 @@ public class Receipt {
     this.purchaseTime = purchaseTime;
     this.items = items;
     this.totalAmount = totalAmount;
+
+    // Log the creation of the receipt
+    logger.info("Receipt ID '{}' created", id);
   }
 
   /**
@@ -246,7 +249,7 @@ public class Receipt {
    */
   private void validateRetailer(String retailer) throws IllegalArgumentException {
     if (retailer == null || retailer.isBlank()) {
-      logger.error("Invalid retailer: '{}'", retailer);
+      logger.error("Invalid retailer for receipt ID '{}': '{}'", id, retailer);
       throw new IllegalArgumentException("Retailer must not be null or blank");
     }
   }
@@ -260,7 +263,7 @@ public class Receipt {
    */
   private void validatePurchaseDate(LocalDate purchaseDate) throws IllegalArgumentException {
     if (purchaseDate == null) {
-      logger.error("Invalid purchase date: 'null'");
+      logger.error("Invalid purchase date for receipt ID '{}': 'null'", id);
       throw new IllegalArgumentException("Purchase date must not be null");
     }
   }
@@ -274,7 +277,7 @@ public class Receipt {
    */
   private void validatePurchaseTime(LocalTime purchaseTime) throws IllegalArgumentException {
     if (purchaseTime == null) {
-      logger.error("Invalid purchase time: 'null'");
+      logger.error("Invalid purchase time for receipt ID '{}': 'null'", id);
       throw new IllegalArgumentException("Purchase time must not be null");
     }
   }
@@ -287,12 +290,12 @@ public class Receipt {
    */
   private void validateItems(List<Item> items) throws IllegalArgumentException {
     if (items == null) {
-      logger.error("Invalid items: 'null'");
+      logger.error("Invalid items for receipt ID '{}' : 'null'", id);
       throw new IllegalArgumentException("Items must not be null");
     }
 
     if (items.isEmpty()) {
-      logger.error("Invalid items: '{}' is empty", items);
+      logger.error("Invalid items for receipt ID '{}': '{}' is empty", id, items);
       throw new IllegalArgumentException("Items must not be empty");
     }
   }
@@ -306,7 +309,7 @@ public class Receipt {
    */
   private void validateTotalAmount(BigDecimal totalAmount) throws IllegalArgumentException {
     if (totalAmount == null || totalAmount.compareTo(BigDecimal.ZERO) < 0) {
-      logger.error("Invalid total amount: '{} is null or negative'", totalAmount);
+      logger.error("Invalid total amount for receipt ID '{}': '{}' is null or negative", id, totalAmount);
       throw new IllegalArgumentException("Total amount must not be null or negative");
     }
   }

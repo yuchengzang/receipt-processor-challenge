@@ -129,7 +129,7 @@ public class Item {
   private void validateShortDescription(String shortDescription) throws IllegalArgumentException {
     if (shortDescription == null || shortDescription.isBlank()) {
       // Log the error message and throw an IllegalArgumentException
-      logger.error("Invalid short description: {}", shortDescription);
+      logger.error("Invalid short description: '{}'", shortDescription);
       throw new IllegalArgumentException("The short description must not be null or blank.");
     }
   }
@@ -144,7 +144,7 @@ public class Item {
   private void validatePrice(BigDecimal price) throws IllegalArgumentException {
     if (price == null || price.compareTo(BigDecimal.ZERO) < 0) {
       // Log the error message and throw an IllegalArgumentException
-      logger.error("Invalid price: {}", price);
+      logger.error("Invalid price: '{}'", price);
       throw new IllegalArgumentException("The price must not be null or negative.");
     }
   }

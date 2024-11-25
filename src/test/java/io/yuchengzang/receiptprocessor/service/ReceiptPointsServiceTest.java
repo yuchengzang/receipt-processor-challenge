@@ -189,4 +189,95 @@ public class ReceiptPointsServiceTest {
     });
   }
 
+  /**
+   * Testing rule: 25 points if the total is a multiple of 0.25.
+   *
+   * Test case: Total amount is $12.25, a multiple of 0.25, so the points for this receipt is 25
+   */
+  @Test
+  void testValidCalculatePointsFromTotalAmountMultipleOfQuarterMultiple1() {
+    testReceipt.setTotalAmount(new BigDecimal("12.25"));
+    assertEquals(25,
+        receiptPointsService.calculatePointsFromTotalAmountMultipleOfQuarter(testReceipt));
+  }
+
+  /**
+   * Testing rule: 25 points if the total is a multiple of 0.25.
+   *
+   * Test case: Total amount is $15.50, a multiple of 0.25, so the points for this receipt is 25
+   */
+  @Test
+  void testValidCalculatePointsFromTotalAmountMultipleOfQuarterMultiple2() {
+    testReceipt.setTotalAmount(new BigDecimal("15.50"));
+    assertEquals(25,
+        receiptPointsService.calculatePointsFromTotalAmountMultipleOfQuarter(testReceipt));
+  }
+
+  /**
+   * Testing rule: 25 points if the total is a multiple of 0.25.
+   *
+   * Test case: Total amount is $10.75, a multiple of 0.25, so the points for this receipt is 25
+   */
+  @Test
+  void testValidCalculatePointsFromTotalAmountMultipleOfQuarterMultiple3() {
+    testReceipt.setTotalAmount(new BigDecimal("10.75"));
+    assertEquals(25,
+        receiptPointsService.calculatePointsFromTotalAmountMultipleOfQuarter(testReceipt));
+  }
+
+  /**
+   * Testing rule: 25 points if the total is a multiple of 0.25.
+   *
+   * Test case: Total amount is $99.00, a multiple of 0.25, so the points for this receipt is 25
+   */
+  @Test
+  void testValidCalculatePointsFromTotalAmountMultipleOfQuarterMultiple4() {
+    testReceipt.setTotalAmount(new BigDecimal("99.00"));
+    assertEquals(25,
+        receiptPointsService.calculatePointsFromTotalAmountMultipleOfQuarter(testReceipt));
+  }
+
+  /**
+   * Testing rule: 25 points if the total is a multiple of 0.25.
+   *
+   * Test case: Total amount is 0.01, not a multiple of 0.25, so the points for this receipt is 0
+   */
+  @Test
+  void testValidCalculatePointsFromTotalAmountMultipleOfQuarterNonMultiple1() {
+    testReceipt.setTotalAmount(new BigDecimal("0.01"));
+    assertEquals(0,
+        receiptPointsService.calculatePointsFromTotalAmountMultipleOfQuarter(testReceipt));
+  }
+
+  /**
+   * Testing rule: 25 points if the total is a multiple of 0.25.
+   *
+   * Test case: Total amount is $12.26, not a multiple of 0.25, so the points for this receipt is 0
+   */
+  @Test
+  void testValidCalculatePointsFromTotalAmountMultipleOfQuarterNonMultiple2() {
+    testReceipt.setTotalAmount(new BigDecimal("12.26"));
+    assertEquals(0,
+        receiptPointsService.calculatePointsFromTotalAmountMultipleOfQuarter(testReceipt));
+  }
+
+  /**
+   * Testing rule: 25 points if the total is a multiple of 0.25.
+   *
+   * Test case: Total amount is $100.49, not a multiple of 0.25, so the points for this receipt is 0
+   */
+  @Test
+  void testValidCalculatePointsFromTotalAmountMultipleOfQuarterNonMultiple3() {
+    testReceipt.setTotalAmount(new BigDecimal("100.49"));
+    assertEquals(0,
+        receiptPointsService.calculatePointsFromTotalAmountMultipleOfQuarter(testReceipt));
+  }
+
+  @Test
+  void testInvalidCalculatePointsFromTotalAmountMultipleOfQuarterNullReceipt() {
+    assertThrows(IllegalArgumentException.class, () -> {
+      receiptPointsService.calculatePointsFromTotalAmountMultipleOfQuarter(null);
+    });
+  }
+
 }

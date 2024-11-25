@@ -32,7 +32,10 @@ public class ReceiptPointsService {
 
     // Calculate the points based on the total amount of the receipt
     int totalPoints = 0;
+
     totalPoints += calculatePointsFromRetailerName(receipt);
+    totalPoints += calculatePointsFromTotalAmountRoundDollar(receipt);
+    totalPoints += calculatePointsFromTotalAmountMultipleOfQuarter(receipt);
 
     logger.info("Total points calculated for receipt ID '{}': '{}'", receipt.getId(), totalPoints);
     return totalPoints;
@@ -69,7 +72,8 @@ public class ReceiptPointsService {
   }
 
   /**
-   * Calculate the points based on the total amount of the receipt
+   * Calculate the points based on the total amount of the receipt, where the total amount is a
+   * round dollar amount with no cents.
    *
    * Rule: 50 points if the total is a round dollar amount with no cents.
    *
@@ -99,6 +103,45 @@ public class ReceiptPointsService {
 
     int points = isRoundDollar ? 50 : 0;
     logger.info("Receipt ID: '{}', Rule: Total Amount Round Dollar, Total Amount: '{}', "
+        + "Points: '{}'", receipt.getId(), totalAmount, points);
+
+    return points;
+  }
+
+  /**
+   * Calculate the points based on the total amount of the receipt, where the total amount is a
+   * multiple of 0.25.
+   *
+   * Rule: 25 points if the total is a multiple of 0.25
+   *
+   * Example:
+   * 1) Total amount is $12.25, so the points for this receipt is 25.
+   * 2) Total amount if $15.50, so the points for this receipt is 25.
+   * 3) Total amount is $10.75, so the points for this receipt is 25.
+   * 4) Total amount is $99.00, so the points for this receipt is 25.
+   * 5) Total amount is $99.99, so the points for this receipt is 0.
+   *
+   * @param receipt the Receipt object to calculate points from. It must not be null.
+   * @return the number of points calculated based on the total amount. It will be 25 if the total
+   *         amount is a multiple of 0.25, 0 otherwise.
+   * @throws IllegalArgumentException if the receipt or its total amount is null
+   */
+  protected int calculatePointsFromTotalAmountMultipleOfQuarter(Receipt receipt)
+      throws IllegalArgumentException {
+    if (receipt == null || receipt.getTotalAmount() == null) {
+      logger.error("Receipt or total amount cannot be null.");
+      throw new IllegalArgumentException("Receipt or total amount cannot be null.");
+    }
+
+    // Compute the points based on the total amount
+    BigDecimal totalAmount = receipt.getTotalAmount();
+
+    // Check if the total amount is a multiple of 0.25
+    boolean isMultipleOfQuarter = totalAmount.remainder(new BigDecimal("0.25"))
+        .compareTo(BigDecimal.ZERO) == 0;
+
+    int points = isMultipleOfQuarter ? 25 : 0;
+    logger.info("Receipt ID: '{}', Rule: Total Amount Multiple of Quarter, Total Amount: '{}', "
         + "Points: '{}'", receipt.getId(), totalAmount, points);
 
     return points;

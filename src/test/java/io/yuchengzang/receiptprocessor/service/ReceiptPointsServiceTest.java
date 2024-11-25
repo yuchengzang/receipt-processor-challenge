@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Collections;
 
@@ -532,6 +533,73 @@ public class ReceiptPointsServiceTest {
   void testInvalidCalculatePointsFromItemDescriptionLengthNullReceipt() {
     assertThrows(IllegalArgumentException.class, () -> {
       receiptPointsService.calculatePointsFromItemDescriptionLength(null);
+    });
+  }
+
+  /**
+   * Testing rule: 6 points if the day in the purchase date is odd.
+   *
+   * Test case: Purchase date is 2022-01-01, which is an odd day, so the points for this receipt
+   * is 6
+   */
+  @Test
+  void testValidCalculatePointsFromPurchaseDateJan01() {
+    testReceipt.setPurchaseDate(LocalDate.parse("2022-01-01"));
+    assertEquals(6, receiptPointsService.calculatePointsFromPurchaseDate(testReceipt));
+  }
+
+  /**
+   * Testing rule: 6 points if the day in the purchase date is odd.
+   *
+   * Test case: Purchase date is 2022-01-02, which is not an odd day, so the points for this receipt
+   * is 0
+   */
+  @Test
+  void testValidCalculatePointsFromPurchaseDateJan02() {
+    testReceipt.setPurchaseDate(LocalDate.parse("2022-01-02"));
+    assertEquals(0, receiptPointsService.calculatePointsFromPurchaseDate(testReceipt));
+  }
+
+  /**
+   * Testing rule: 6 points if the day in the purchase date is odd.
+   *
+   * Test case: Purchase date is 2022-01-31 (edge case, the last day of of a month), which is an odd
+   * day, so the points for this receipt is 6
+   */
+  @Test
+  void testValidCalculatePointsFromPurchaseDateJan31() {
+    testReceipt.setPurchaseDate(LocalDate.parse("2022-01-31"));
+    assertEquals(6, receiptPointsService.calculatePointsFromPurchaseDate(testReceipt));
+  }
+
+  /**
+   * Testing rule: 6 points if the day in the purchase date is odd.
+   *
+   * Test case: Purchase date is 2022-02-28 (edge case, the last day of a month), which is not an
+   * odd day, so the points for this receipt is 0
+   */
+  @Test
+  void testValidCalculatePointsFromPurchaseDateFeb28() {
+    testReceipt.setPurchaseDate(LocalDate.parse("2022-02-28"));
+    assertEquals(0, receiptPointsService.calculatePointsFromPurchaseDate(testReceipt));
+  }
+
+  /**
+   * Testing rule: 6 points if the day in the purchase date is odd.
+   *
+   * Test case: Purchase date is 2020-02-29 (edge case, a leap year), which is an odd day, so the
+   * points for this receipt is 6
+   */
+  @Test
+  void testValidCalculatePointsFromPurchaseDateFeb29() {
+    testReceipt.setPurchaseDate(LocalDate.parse("2020-02-29"));
+    assertEquals(6, receiptPointsService.calculatePointsFromPurchaseDate(testReceipt));
+  }
+
+  @Test
+  void testInvalidCalculatePointsFromPurchaseDateNullReceipt() {
+    assertThrows(IllegalArgumentException.class, () -> {
+      receiptPointsService.calculatePointsFromPurchaseDate(null);
     });
   }
 

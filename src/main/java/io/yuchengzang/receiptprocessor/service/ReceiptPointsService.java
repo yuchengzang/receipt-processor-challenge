@@ -38,6 +38,8 @@ public class ReceiptPointsService {
     totalPoints += calculatePointsFromTotalAmountRoundDollar(receipt);
     totalPoints += calculatePointsFromTotalAmountMultipleOfQuarter(receipt);
     totalPoints += calculatePointsFromItemCount(receipt);
+    totalPoints += calculatePointsFromItemDescriptionLength(receipt);
+    totalPoints += calculatePointsFromPurchaseDate(receipt);
 
     logger.info("Total points calculated for receipt ID '{}': '{}'", receipt.getId(), totalPoints);
     return totalPoints;
@@ -229,6 +231,43 @@ public class ReceiptPointsService {
 
     logger.info("Receipt ID: '{}', Rule: Item Description Length, Points: '{}'",
         receipt.getId(), points);
+
+    return points;
+  }
+
+  /**
+   * Calculate the points based on the purchase date of the receipt
+   *
+   * Rule: 6 points if the day in the purchase date is odd.
+   *
+   * Example:
+   * 1) Purchase date: 2022-01-01, Points: 6
+   * 2) Purchase date: 2022-01-02, Points: 0
+   * 3) Purchase date: 2022-01-31, Points: 6
+   * 4) Purchase date: 2022-02-28, Points: 0
+   * 5) Purchase date: 2020-02-29, Points: 6 (leap year)
+   *
+   * @param receipt the Receipt object to calculate points from. It must not be null.
+   * @return the number of points calculated based on the purchase date
+   */
+  protected int calculatePointsFromPurchaseDate(Receipt receipt) {
+    // Validate the input
+    if (receipt == null || receipt.getPurchaseDate() == null) {
+      logger.error("Receipt or purchase date cannot be null.");
+      throw new IllegalArgumentException("Receipt or purchase date cannot be null.");
+    }
+
+    // Calculate the points based on the purchase date
+    int day = receipt.getPurchaseDate().getDayOfMonth();
+    int points = 0;
+
+    // Check if the day is odd. Odd days have 6 points
+    if (day % 2 == 1) {
+      points = 6;
+    }
+
+    logger.info("Receipt ID: '{}', Rule: Purchase Date, Purchase Date: '{}', Day: '{}',"
+            + " Points: '{}'", receipt.getId(), receipt.getPurchaseDate(), day, points);
 
     return points;
   }

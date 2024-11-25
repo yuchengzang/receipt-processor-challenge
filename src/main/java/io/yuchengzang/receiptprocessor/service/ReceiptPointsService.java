@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.yuchengzang.receiptprocessor.model.Receipt;
+import io.yuchengzang.receiptprocessor.model.Item;
 
 /**
  * The ReceiptPointsService class provides services for calculating points from receipts.
@@ -179,6 +180,55 @@ public class ReceiptPointsService {
 
     logger.info("Receipt ID: '{}', Rule: Item Count, Items Count: '{}', Points: '{}'",
         receipt.getId(), itemsCount, points);
+
+    return points;
+  }
+
+  /**
+   * Calculate the points based on the length of `shortDescription` of the items in the receipt
+   *
+   * Rule: If the trimmed length of the item description is a multiple of 3, multiply the price by
+   * 0.2 and round up to the nearest integer. The result is the number of points earned.
+   *
+   * Example:
+   * 1) Item: "Mountain Dew 12PK", Price: $5.99, Points: 0
+   * 2) Item: "Coca-Cola 12PKG", Price: $5.99, Points: 2
+   * 3) Item: "Emils Cheese Pizza", Price: $12.25, Points: 3
+   * 4) Item: "   Klarbrunn 12-PK 12 FL OZ  ", Price: $12.00, Points: 3
+   *
+   * @param receipt the Receipt object to calculate points from. It must not be null.
+   * @return the number of points calculated based on the length of the item description
+   * @throws IllegalArgumentException if the receipt or its items is null
+   */
+  protected int calculatePointsFromItemDescriptionLength(Receipt receipt)
+      throws IllegalArgumentException {
+    if (receipt == null || receipt.getItems() == null) {
+      logger.error("Receipt or items cannot be null.");
+      throw new IllegalArgumentException("Receipt or items cannot be null.");
+    }
+
+    // Compute the points based on the length of the item description
+    int points = 0;
+
+    for (Item item : receipt.getItems()) {
+      String trimmedShortDescription = item.getShortDescription().trim();
+      BigDecimal price = item.getPrice();
+      int thisItemPoints = 0;
+
+      if (trimmedShortDescription.length() % 3 == 0) {
+        thisItemPoints = (int)Math.ceil(price.multiply(new BigDecimal("0.2")).doubleValue());
+      }
+
+      points += thisItemPoints;
+
+      logger.info("Receipt ID: '{}', Rule: Item Description Length, Description: '{}', Price: '{}',"
+          + " Trimmed Length: '{}', This Item Points: '{}', Total Running Points: '{}'",
+          receipt.getId(), item.getShortDescription(), price, trimmedShortDescription.length(),
+          thisItemPoints, points);
+    }
+
+    logger.info("Receipt ID: '{}', Rule: Item Description Length, Points: '{}'",
+        receipt.getId(), points);
 
     return points;
   }

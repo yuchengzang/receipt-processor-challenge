@@ -378,5 +378,162 @@ public class ReceiptPointsServiceTest {
     });
   }
 
+  /**
+   * Testing rule: If the trimmed length of the item description is a multiple of 3, multiply the
+   * price by 0.2 and round up to the nearest integer. The result is the number of points earned.
+   *
+   * Test case: 1 item.
+   * Item: "Mountain Dew 12PK", Price: $5.99, Points: 0
+   * (The trimmed length is 17, which is not a multiple of 3)
+   */
+  @Test
+  void testValidCalculatePointsFromItemDescriptionLength1ItemTest1() {
+    Item item = new Item("Mountain Dew 12PK", new BigDecimal("5.99"));
+    testReceipt.setItems(List.of(item));
+
+    assertEquals(0,
+        receiptPointsService.calculatePointsFromItemDescriptionLength(testReceipt));
+  }
+
+  /**
+   * Testing rule: If the trimmed length of the item description is a multiple of 3, multiply the
+   * price by 0.2 and round up to the nearest integer. The result is the number of points earned.
+   *
+   * Test case: 1 item.
+   * Item: "Coca-Cola 12PKG", Price: $5.99, Points: 2
+   * (trimmed length is 15, which is a multiple of 3. points = 5.99 * 0.2 = 1.198, rounded up to 2)
+   */
+  @Test
+  void testValidCalculatePointsFromItemDescriptionLength1ItemTest2() {
+    Item item = new Item("Coca-Cola 12PKG", new BigDecimal("5.99"));
+    testReceipt.setItems(List.of(item));
+
+    assertEquals(2,
+        receiptPointsService.calculatePointsFromItemDescriptionLength(testReceipt));
+  }
+
+  /**
+   * Testing rule: If the trimmed length of the item description is a multiple of 3, multiply the
+   * price by 0.2 and round up to the nearest integer. The result is the number of points earned.
+   *
+   * Test case: 1 item.
+   * Item: "Emils Cheese Pizza", Price: $12.25, Points: 3
+   * (trimmed length is 18, which is a multiple of 3. points = 12.25 * 0.2 = 2.45, rounded up to 3)
+   */
+  @Test
+  void testValidCalculatePointsFromItemDescriptionLength1ItemTest3() {
+    Item item = new Item("Emils Cheese Pizza", new BigDecimal("12.25"));
+    testReceipt.setItems(List.of(item));
+
+    assertEquals(3,
+        receiptPointsService.calculatePointsFromItemDescriptionLength(testReceipt));
+  }
+
+  /**
+   * Testing rule: If the trimmed length of the item description is a multiple of 3, multiply the
+   * price by 0.2 and round up to the nearest integer. The result is the number of points earned.
+   *
+   * Test case: 1 item.
+   * Item: "   Klarbrunn 12-PK 12 FL OZ  ", Price: $12.00, Points: 3
+   * (trimmed length is 24, which is a multiple of 3. points = 12.00 * 0.2 = 2.4, rounded up to 3)
+   */
+  @Test
+  void testValidCalculatePointsFromItemDescriptionLength1ItemTest4() {
+    Item item = new Item("   Klarbrunn 12-PK 12 FL OZ  ", new BigDecimal("12.00"));
+    testReceipt.setItems(List.of(item));
+
+    assertEquals(3,
+        receiptPointsService.calculatePointsFromItemDescriptionLength(testReceipt));
+  }
+
+  /**
+   * Testing rule: If the trimmed length of the item description is a multiple of 3, multiply the
+   * price by 0.2 and round up to the nearest integer. The result is the number of points earned.
+   *
+   * Test case: 2 items.
+   * Item1: "Mountain Dew 12PK", Price: $5.99
+   * (The trimmed length is 17, which is not a multiple of 3)
+   * Item2: "Coca-Cola 12PKG", Price: $5.99
+   * (trimmed length is 15, which is a multiple of 3. points = 5.99 * 0.2 = 1.198, rounded up to 2)
+   * Points: 2
+   */
+  @Test
+  void testValidCalculatePointsFromItemDescriptionLength2ItemsTest1() {
+    Item item1 = new Item("Mountain Dew 12PK", new BigDecimal("5.99"));
+    Item item2 = new Item("Coca-Cola 12PKG", new BigDecimal("5.99"));
+    testReceipt.setItems(List.of(item1, item2));
+
+    assertEquals(2,
+        receiptPointsService.calculatePointsFromItemDescriptionLength(testReceipt));
+  }
+
+  /**
+   * Testing rule: If the trimmed length of the item description is a multiple of 3, multiply the
+   * price by 0.2 and round up to the nearest integer. The result is the number of points earned.
+   *
+   * Test case: 2 items.
+   * Item1: "Coca-Cola 12PKG", Price: $5.99
+   * (trimmed length is 15, which is a multiple of 3. points = 5.99 * 0.2 = 1.198, rounded up to 2)
+   * Item2: "Emils Cheese Pizza", Price: $12.25
+   * (trimmed length is 18, which is a multiple of 3. points = 12.25 * 0.2 = 2.45, rounded up to 3)
+   * Points: 5
+   */
+  @Test
+  void testValidCalculatePointsFromItemDescriptionLength2ItemsTest2() {
+    Item item1 = new Item("Coca-Cola 12PKG", new BigDecimal("5.99"));
+    Item item2 = new Item("Emils Cheese Pizza", new BigDecimal("12.25"));
+    testReceipt.setItems(List.of(item1, item2));
+
+    assertEquals(5,
+        receiptPointsService.calculatePointsFromItemDescriptionLength(testReceipt));
+  }
+
+  /**
+   * Testing rule: If the trimmed length of the item description is a multiple of 3, multiply the
+   * price by 0.2 and round up to the nearest integer. The result is the number of points earned.
+   *
+   * Test case: 500 items.
+   * Item: "Mountain Dew 12PK", Price: $5.99
+   *
+   * It adds 500 items with the same description and price. The trimmed length of the description
+   * is 17, which is not a multiple of 3, so the points for this receipt is 0.
+   */
+  @Test
+  void testValidCalculatePointsFromItemDescriptionLengthSmoke1() {
+    Item item = new Item("Mountain Dew 12PK", new BigDecimal("5.99"));
+    List<Item> items = Collections.nCopies(500, item);
+    testReceipt.setItems(items);
+
+    assertEquals(0,
+        receiptPointsService.calculatePointsFromItemDescriptionLength(testReceipt));
+  }
+
+  /**
+   * Testing rule: If the trimmed length of the item description is a multiple of 3, multiply the
+   * price by 0.2 and round up to the nearest integer. The result is the number of points earned.
+   *
+   * Test case: 500 items.
+   * Item: "Emils Cheese Pizza", Price: $12.25
+   *
+   * It adds 500 items with the same description and price. The trimmed length of the description
+   * is 18, which is a multiple of 3, so the points for this receipt is 3 * 500 = 1500.
+   */
+  @Test
+  void testValidCalculatePointsFromItemDescriptionLengthSmoke2() {
+    Item item = new Item("Emils Cheese Pizza", new BigDecimal("12.25"));
+    List<Item> items = Collections.nCopies(500, item);
+    testReceipt.setItems(items);
+
+    assertEquals(1500,
+        receiptPointsService.calculatePointsFromItemDescriptionLength(testReceipt));
+  }
+
+  @Test
+  void testInvalidCalculatePointsFromItemDescriptionLengthNullReceipt() {
+    assertThrows(IllegalArgumentException.class, () -> {
+      receiptPointsService.calculatePointsFromItemDescriptionLength(null);
+    });
+  }
+
 
 }

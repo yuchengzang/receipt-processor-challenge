@@ -49,12 +49,12 @@ public class ReceiptPointsService {
    *
    * @param receipt the Receipt object to calculate points from. It must not be null.
    * @return the number of points calculated based on the total amount
-   * @throws IllegalArgumentException if the receipt is null
+   * @throws IllegalArgumentException if the receipt or its retailer is null
    */
   protected int calculatePointsFromRetailerName(Receipt receipt) throws IllegalArgumentException {
     // Validate the input
     if (receipt == null || receipt.getRetailer() == null) {
-      logger.error("Receipt cannot be null.");
+      logger.error("Receipt or retailer cannot be null.");
       throw new IllegalArgumentException("Receipt or retailer cannot be null.");
     }
 
@@ -64,6 +64,42 @@ public class ReceiptPointsService {
 
     logger.info("Receipt ID: '{}',Rule: Retailer Name, Retailer: '{}', Points: '{}'",
         receipt.getId(), retailer, points);
+
+    return points;
+  }
+
+  /**
+   * Calculate the points based on the total amount of the receipt
+   *
+   * Rule: 50 points if the total is a round dollar amount with no cents.
+   *
+   * Example:
+   * 1) Total amount is $100.00, so the points for this receipt is 50.
+   * 2) Total amount is $99.99, so the points for this receipt is 0.
+   *
+   * @param receipt the Receipt object to calculate points from. It must not be null.
+   * @return the number of points calculated based on the total amount. It will be 50 if the total
+   *         amount is a round dollar amount, 0 otherwise.
+   * @throws IllegalArgumentException if the receipt or its total amount is null
+   */
+  protected int calculatePointsFromTotalAmountRoundDollar(Receipt receipt)
+      throws IllegalArgumentException {
+    if (receipt == null || receipt.getTotalAmount() == null) {
+      logger.error("Receipt or total amount cannot be null.");
+      throw new IllegalArgumentException("Receipt or total amount cannot be null.");
+    }
+
+    // Compute the points based on the total amount
+    BigDecimal totalAmount = receipt.getTotalAmount();
+
+    // Check if the total amount is a round dollar amount.
+    // remainder(BigDecimal.ONE): Computes the fractional part of the number.
+    // If the remainder is zero, it means the number has no fractional part and is a round number
+    boolean isRoundDollar = totalAmount.remainder(BigDecimal.ONE).compareTo(BigDecimal.ZERO) == 0;
+
+    int points = isRoundDollar ? 50 : 0;
+    logger.info("Receipt ID: '{}', Rule: Total Amount Round Dollar, Total Amount: '{}', "
+        + "Points: '{}'", receipt.getId(), totalAmount, points);
 
     return points;
   }

@@ -4,7 +4,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.math.BigDecimal;
+
 import io.yuchengzang.receiptprocessor.model.Receipt;
+
 public class ReceiptPointsServiceTest {
 
   /**
@@ -102,4 +105,88 @@ public class ReceiptPointsServiceTest {
       receiptPointsService.calculatePointsFromRetailerName(null);
     });
   }
+
+  /**
+   * Testing rule: 50 points if the total is a round dollar amount with no cents.
+   *
+   * Test case: Total amount is $100.00, a round dollar amount, so the points for this receipt is 50
+   */
+  @Test
+  void testValidCalculatePointsFromTotalAmountRoundDollarRound1() {
+    testReceipt.setTotalAmount(new BigDecimal("100.00"));
+    assertEquals(50,
+        receiptPointsService.calculatePointsFromTotalAmountRoundDollar(testReceipt));
+  }
+
+  /**
+   * Testing rule: 50 points if the total is a round dollar amount with no cents.
+   *
+   * Test case: Total amount is $0.00, a round dollar amount, so the points for this receipt is 50
+   */
+  @Test
+  void testValidCalculatePointsFromTotalAmountRoundDollarRound2() {
+    testReceipt.setTotalAmount(new BigDecimal("0.00"));
+    assertEquals(50,
+        receiptPointsService.calculatePointsFromTotalAmountRoundDollar(testReceipt));
+  }
+
+  /**
+   * Testing rule: 50 points if the total is a round dollar amount with no cents.
+   *
+   * Test case: Total amount is $12, a round dollar amount but without trailing ".00", so the points
+   * for this receipt is 50
+   */
+  @Test
+  void testValidCalculatePointsFromTotalAmountRoundDollarRound3() {
+    testReceipt.setTotalAmount(new BigDecimal("12"));
+    assertEquals(50,
+        receiptPointsService.calculatePointsFromTotalAmountRoundDollar(testReceipt));
+  }
+
+  /**
+   * Testing rule: 50 points if the total is a round dollar amount with no cents.
+   *
+   * Test case: Total amount is $0.01, not a round dollar amount, so the points for this receipt is
+   * 0
+   */
+  @Test
+  void testValidCalculatePointsFromTotalAmountRoundDollarNonRound1() {
+    testReceipt.setTotalAmount(new BigDecimal("0.01"));
+    assertEquals(0,
+        receiptPointsService.calculatePointsFromTotalAmountRoundDollar(testReceipt));
+  }
+
+  /**
+   * Testing rule: 50 points if the total is a round dollar amount with no cents.
+   *
+   * Test case: Total amount is $99.99, not a round dollar amount, so the points for this receipt is
+   * 0
+   */
+  @Test
+  void testValidCalculatePointsFromTotalAmountRoundDollarNonRound2() {
+    testReceipt.setTotalAmount(new BigDecimal("99.99"));
+    assertEquals(0,
+        receiptPointsService.calculatePointsFromTotalAmountRoundDollar(testReceipt));
+  }
+
+  /**
+   * Testing rule: 50 points if the total is a round dollar amount with no cents.
+   *
+   * Test case: Total amount is $10.50, not a round dollar amount, so the points for this receipt is
+   * 0
+   */
+  @Test
+  void testValidCalculatePointsFromTotalAmountRoundDollarNonRound3() {
+    testReceipt.setTotalAmount(new BigDecimal("10.50"));
+    assertEquals(0,
+        receiptPointsService.calculatePointsFromTotalAmountRoundDollar(testReceipt));
+  }
+
+  @Test
+  void testInvalidCalculatePointsFromTotalAmountRoundDollarNullReceipt() {
+    assertThrows(IllegalArgumentException.class, () -> {
+      receiptPointsService.calculatePointsFromTotalAmountRoundDollar(null);
+    });
+  }
+
 }

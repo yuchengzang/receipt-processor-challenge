@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Collections;
 
@@ -603,5 +604,122 @@ public class ReceiptPointsServiceTest {
     });
   }
 
+  /**
+   * Testing rule: 10 points if the time of purchase is after 2:00pm and before 4:00pm.
+   *
+   * Test case: Purchase time is 11:00 (morning), which is before 2:00pm, so the points for this
+   * receipt is 0
+   */
+  @Test
+  void testValidCalculatePointsFromPurchaseTime1100() {
+    testReceipt.setPurchaseTime(LocalTime.parse("11:00"));
+    assertEquals(0, receiptPointsService.calculatePointsFromPurchaseTime(testReceipt));
+  }
+
+  /**
+   * Testing rule: 10 points if the time of purchase is after 2:00pm and before 4:00pm.
+   *
+   * Test case: Purchase time is 13:00, which is before 2:00pm, so the points for this receipt is 0
+   */
+  @Test
+  void testValidCalculatePointsFromPurchaseTime1300() {
+    testReceipt.setPurchaseTime(LocalTime.parse("13:00"));
+    assertEquals(0, receiptPointsService.calculatePointsFromPurchaseTime(testReceipt));
+  }
+
+  /**
+   * Testing rule: 10 points if the time of purchase is after 2:00pm and before 4:00pm.
+   *
+   * Test case: Purchase time is 13:59 (edge case, last minute before 2:00pm), which is before
+   * 2:00pm, so the points for this receipt is 0
+   */
+  @Test
+  void testValidCalculatePointsFromPurchaseTime1359() {
+    testReceipt.setPurchaseTime(LocalTime.parse("13:59"));
+    assertEquals(0, receiptPointsService.calculatePointsFromPurchaseTime(testReceipt));
+  }
+
+  /**
+   * Testing rule: 10 points if the time of purchase is after 2:00pm and before 4:00pm.
+   *
+   * Test case: Purchase time is 14:00 (edge case, excatlly 2:00pm), which is NOT after 2:00pm, so
+   * the points for this receipt is 10
+   */
+  @Test
+  void testValidCalculatePointsFromPurchaseTime1400() {
+    testReceipt.setPurchaseTime(LocalTime.parse("14:00"));
+    assertEquals(0, receiptPointsService.calculatePointsFromPurchaseTime(testReceipt));
+  }
+
+  /**
+   * Testing rule: 10 points if the time of purchase is after 2:00pm and before 4:00pm.
+   *
+   * Test case: Purchase time is 14:01 (edge case, first minute after 2:00pm), which is after 2:00pm,
+   * so the points for this receipt is 10
+   */
+  @Test
+  void testValidCalculatePointsFromPurchaseTime1401() {
+    testReceipt.setPurchaseTime(LocalTime.parse("14:01"));
+    assertEquals(10, receiptPointsService.calculatePointsFromPurchaseTime(testReceipt));
+  }
+
+  /**
+   * Testing rule: 10 points if the time of purchase is after 2:00pm and before 4:00pm.
+   *
+   * Test case: Purchase time is 14:23, which is after 2:00pm and before 4:00pm, so the points for
+   * this receipt is 10
+   */
+  @Test
+  void testValidCalculatePointsFromPurchaseTime1423() {
+    testReceipt.setPurchaseTime(LocalTime.parse("14:23"));
+    assertEquals(10, receiptPointsService.calculatePointsFromPurchaseTime(testReceipt));
+  }
+
+  /**
+   * Testing rule: 10 points if the time of purchase is after 2:00pm and before 4:00pm.
+   *
+   * Test case: Purchase time is 15:21, which is after 2:00pm and before 4:00pm, so the points for
+   * this receipt is 10
+   */
+  @Test
+  void testValidCalculatePointsFromPurchaseTime1521() {
+    testReceipt.setPurchaseTime(LocalTime.parse("15:21"));
+    assertEquals(10, receiptPointsService.calculatePointsFromPurchaseTime(testReceipt));
+  }
+
+  /**
+   * Testing rule: 10 points if the time of purchase is after 2:00pm and before 4:00pm.
+   *
+   * Test case: Purchase time is 15:59 (edge case, last minute before 4:00pm), which is before 4:00pm,
+   * so the points for this receipt is 10
+   */
+  @Test
+  void testValidCalculatePointsFromPurchaseTime1559() {
+    testReceipt.setPurchaseTime(LocalTime.parse("15:59"));
+    assertEquals(10, receiptPointsService.calculatePointsFromPurchaseTime(testReceipt));
+  }
+
+  /**
+   * Testing rule: 10 points if the time of purchase is after 2:00pm and before 4:00pm.
+   *
+   * Test case: Purchase time is 16:00 (edge case, first minute after 4:00pm), which is NOT before
+   * 4:00pm, so the points for this receipt is 0
+   */
+  @Test
+  void testValidCalculatePointsFromPurchaseTime1600() {
+    testReceipt.setPurchaseTime(LocalTime.parse("16:00"));
+    assertEquals(0, receiptPointsService.calculatePointsFromPurchaseTime(testReceipt));
+  }
+
+  /**
+   * Testing rule: 10 points if the time of purchase is after 2:00pm and before 4:00pm.
+   *
+   * Test case: Purchase time is 17:00, which is after 4:00pm, so the points for this receipt is 0
+   */
+  @Test
+  void testValidCalculatePointsFromPurchaseTime1700() {
+    testReceipt.setPurchaseTime(LocalTime.parse("17:00"));
+    assertEquals(0, receiptPointsService.calculatePointsFromPurchaseTime(testReceipt));
+  }
 
 }

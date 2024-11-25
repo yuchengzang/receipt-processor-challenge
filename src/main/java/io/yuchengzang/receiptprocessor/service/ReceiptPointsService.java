@@ -40,6 +40,7 @@ public class ReceiptPointsService {
     totalPoints += calculatePointsFromItemCount(receipt);
     totalPoints += calculatePointsFromItemDescriptionLength(receipt);
     totalPoints += calculatePointsFromPurchaseDate(receipt);
+    totalPoints += calculatePointsFromPurchaseTime(receipt);
 
     logger.info("Total points calculated for receipt ID '{}': '{}'", receipt.getId(), totalPoints);
     return totalPoints;
@@ -249,8 +250,9 @@ public class ReceiptPointsService {
    *
    * @param receipt the Receipt object to calculate points from. It must not be null.
    * @return the number of points calculated based on the purchase date
+   * @throws IllegalArgumentException if the receipt or its purchase date is null
    */
-  protected int calculatePointsFromPurchaseDate(Receipt receipt) {
+  protected int calculatePointsFromPurchaseDate(Receipt receipt) throws IllegalArgumentException {
     // Validate the input
     if (receipt == null || receipt.getPurchaseDate() == null) {
       logger.error("Receipt or purchase date cannot be null.");
@@ -268,6 +270,48 @@ public class ReceiptPointsService {
 
     logger.info("Receipt ID: '{}', Rule: Purchase Date, Purchase Date: '{}', Day: '{}',"
             + " Points: '{}'", receipt.getId(), receipt.getPurchaseDate(), day, points);
+
+    return points;
+  }
+
+  /**
+   * Calculate the points based on the purchase time of the receipt
+   *
+   * Rule: 10 points if the time of purchase is after 2:00pm and before 4:00pm.
+   *
+   * Example:
+   * 1) Purchase time: 13:00, Points: 0
+   * 2) Purchase time: 13:59, Points: 0 (Edge case, last minute before 2:00pm)
+   * 3) Purchase time: 14:00, Points: 0 (Edge case, exactly 2:00pm)
+   * 4) Purchase time: 14:01, Points: 10 (Edge case, first minute after 2:00pm)
+   * 5) Purchase time: 14:23, Points: 10
+   * 6) Purchase time: 15:21, Points: 10
+   * 7) Purchase time: 15:59, Points: 10 (Edge case, last minute before 4:00pm)
+   * 8) Purchase time: 16:00, Points: 0 (Edge case, first minute after 4:00pm)
+   * 9) Purchase time: 17:00, Points: 0
+   *
+   * @param receipt the Receipt object to calculate points from. It must not be null.
+   * @return the number of points calculated based on the purchase time
+   * @throws IllegalArgumentException if the receipt or its purchase time is null
+   */
+  protected int calculatePointsFromPurchaseTime(Receipt receipt) throws IllegalArgumentException {
+    // Validate the input
+    if (receipt == null || receipt.getPurchaseTime() == null) {
+      logger.error("Receipt or purchase time cannot be null.");
+      throw new IllegalArgumentException("Receipt or purchase time cannot be null.");
+    }
+
+    // Calculate the points based on the purchase time
+    LocalTime purchaseTime = receipt.getPurchaseTime();
+    int points = 0;
+
+    // Check if the purchase time is after 2:00pm and before 4:00pm
+    if (purchaseTime.isAfter(LocalTime.of(14, 0)) && purchaseTime.isBefore(LocalTime.of(16, 0))) {
+      points = 10;
+    }
+
+    logger.info("Receipt ID: '{}', Rule: Purchase Time, Purchase Time: '{}', Points: '{}'",
+        receipt.getId(), purchaseTime, points);
 
     return points;
   }

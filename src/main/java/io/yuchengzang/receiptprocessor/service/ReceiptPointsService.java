@@ -36,6 +36,7 @@ public class ReceiptPointsService {
     totalPoints += calculatePointsFromRetailerName(receipt);
     totalPoints += calculatePointsFromTotalAmountRoundDollar(receipt);
     totalPoints += calculatePointsFromTotalAmountMultipleOfQuarter(receipt);
+    totalPoints += calculatePointsFromItemCount(receipt);
 
     logger.info("Total points calculated for receipt ID '{}': '{}'", receipt.getId(), totalPoints);
     return totalPoints;
@@ -143,6 +144,41 @@ public class ReceiptPointsService {
     int points = isMultipleOfQuarter ? 25 : 0;
     logger.info("Receipt ID: '{}', Rule: Total Amount Multiple of Quarter, Total Amount: '{}', "
         + "Points: '{}'", receipt.getId(), totalAmount, points);
+
+    return points;
+  }
+
+  /**
+   * Calculate the points based on the number of items on the receipt
+   *
+   * Rule: 5 points for every two items on the receipt
+   *
+   * Example:
+   *  1) 1 item: 0 points
+   *  2) 2 items: 5 points
+   *  3) 3 items: 5 points
+   *  4) 4 items: 10 points
+   *  5) 12 items: 30 points
+   *  6) 99 items: 245 points
+   *
+   * @param receipt the Receipt object to calculate points from. It must not be null.
+   * @return the number of points calculated based on number of items on the receipt. It will be 5
+   *         points for every two items on the receipt.
+   * @throws IllegalArgumentException if the receipt or its items is null
+   */
+  protected int calculatePointsFromItemCount(Receipt receipt)
+      throws IllegalArgumentException {
+    if (receipt == null || receipt.getItems() == null) {
+      logger.error("Receipt or items cannot be null.");
+      throw new IllegalArgumentException("Receipt or items cannot be null.");
+    }
+
+    // Compute the points based on the number of items. 5 points for every two items
+    int itemsCount = receipt.getItems().size();
+    int points = itemsCount / 2 * 5;
+
+    logger.info("Receipt ID: '{}', Rule: Item Count, Items Count: '{}', Points: '{}'",
+        receipt.getId(), itemsCount, points);
 
     return points;
   }

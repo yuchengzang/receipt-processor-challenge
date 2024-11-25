@@ -5,8 +5,11 @@ import org.junit.jupiter.api.BeforeEach;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.Collections;
 
 import io.yuchengzang.receiptprocessor.model.Receipt;
+import io.yuchengzang.receiptprocessor.model.Item;
 
 public class ReceiptPointsServiceTest {
 
@@ -279,5 +282,101 @@ public class ReceiptPointsServiceTest {
       receiptPointsService.calculatePointsFromTotalAmountMultipleOfQuarter(null);
     });
   }
+
+  /**
+   * Testing rule: 5 points for every two items on the receipt
+   *
+   * Test case: 1 item, so the points for this receipt is 0
+   */
+  @Test
+  void testValidCalculatePointsFromItemCount1Item() {
+    Item item1 = new Item("Mountain Dew 12PK", new BigDecimal("5.99"));
+    testReceipt.setItems(List.of(item1));
+
+    assertEquals(0, receiptPointsService.calculatePointsFromItemCount(testReceipt));
+  }
+
+  /**
+   * Testing rule: 5 points for every two items on the receipt
+   *
+   * Test case: 2 items, so the points for this receipt is 5
+   */
+  @Test
+  void testValidCalculatePointsFromItemCount2Items() {
+    Item item1 = new Item("Mountain Dew 12PK", new BigDecimal("5.99"));
+    Item item2 = new Item("Coca-Cola 12PK", new BigDecimal("5.99"));
+    testReceipt.setItems(List.of(item1, item2));
+
+    assertEquals(5, receiptPointsService.calculatePointsFromItemCount(testReceipt));
+  }
+
+  /**
+   * Testing rule: 5 points for every two items on the receipt
+   *
+   * Test case: 3 items, so the points for this receipt is 5
+   */
+  @Test
+  void testValidCalculatePointsFromItemCount3Items() {
+    Item item1 = new Item("Mountain Dew 12PK", new BigDecimal("5.99"));
+    Item item2 = new Item("Coca-Cola 12PK", new BigDecimal("5.99"));
+    Item item3 = new Item("Pepsi 12PK", new BigDecimal("5.99"));
+    testReceipt.setItems(List.of(item1, item2, item3));
+
+    assertEquals(5, receiptPointsService.calculatePointsFromItemCount(testReceipt));
+  }
+
+  /**
+   * Testing rule: 5 points for every two items on the receipt
+   *
+   * Test case: 4 items, so the points for this receipt is 10
+   */
+  @Test
+  void testValidCalculatePointsFromItemCount4Items() {
+    Item item1 = new Item("Mountain Dew 12PK", new BigDecimal("5.99"));
+    Item item2 = new Item("Coca-Cola 12PK", new BigDecimal("5.99"));
+    Item item3 = new Item("Pepsi 12PK", new BigDecimal("5.99"));
+    Item item4 = new Item("Sprite 12PK", new BigDecimal("5.99"));
+    testReceipt.setItems(List.of(item1, item2, item3, item4));
+
+    assertEquals(10, receiptPointsService.calculatePointsFromItemCount(testReceipt));
+  }
+
+  /**
+   * Testing rule: 5 points for every two items on the receipt
+   *
+   * Test case: 12 items, so the points for this receipt is 30
+   */
+  @Test
+  void testValidCalculatePointsFromItemCount12Items() {
+    // Create a list of 12 items
+    Item item = new Item("Mountain Dew 12PK", new BigDecimal("5.99"));
+    List<Item> items = Collections.nCopies(12, item);
+    testReceipt.setItems(items);
+
+    assertEquals(30, receiptPointsService.calculatePointsFromItemCount(testReceipt));
+  }
+
+  /**
+   * Testing rule: 5 points for every two items on the receipt
+   *
+   * Test case: 99 items, so the points for this receipt is 245
+   */
+  @Test
+  void testValidCalculatePointsFromItemCount99Items() {
+    // Create a list of 99 items
+    Item item = new Item("Mountain Dew 12PK", new BigDecimal("5.99"));
+    List<Item> items = Collections.nCopies(99, item);
+    testReceipt.setItems(items);
+
+    assertEquals(245, receiptPointsService.calculatePointsFromItemCount(testReceipt));
+  }
+
+  @Test
+  void testInvalidCalculatePointsFromItemCountNullReceipt() {
+    assertThrows(IllegalArgumentException.class, () -> {
+      receiptPointsService.calculatePointsFromItemCount(null);
+    });
+  }
+
 
 }

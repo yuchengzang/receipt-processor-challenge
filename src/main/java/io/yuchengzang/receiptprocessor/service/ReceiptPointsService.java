@@ -70,7 +70,7 @@ public class ReceiptPointsService {
     String retailer = receipt.getRetailer();
     int points = retailer.replaceAll("[^a-zA-Z0-9]", "").length();
 
-    logger.info("Receipt ID: '{}',Rule: Retailer Name, Retailer: '{}', Points: '{}'",
+    logger.info("Receipt ID: '{}', Rule: Retailer Name, Retailer: '{}', Points: '{}'",
         receipt.getId(), retailer, points);
 
     return points;

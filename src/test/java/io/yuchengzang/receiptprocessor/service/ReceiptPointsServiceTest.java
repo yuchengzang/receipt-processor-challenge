@@ -722,4 +722,211 @@ public class ReceiptPointsServiceTest {
     assertEquals(0, receiptPointsService.calculatePointsFromPurchaseTime(testReceipt));
   }
 
+  /**
+   * Testing the overall calculatePoints() method based on the receipt provided in the
+   * /examples/simple-receipt.json file:
+   *
+   * @Code {
+   *     "retailer": "Target",
+   *     "purchaseDate": "2022-01-02",
+   *     "purchaseTime": "13:13",
+   *     "total": "1.25",
+   *     "items": [
+   *         {"shortDescription": "Pepsi - 12-oz", "price": "1.25"}
+   *     ]
+   * }
+   *
+   * Total points should be 31.
+   */
+  @Test
+  void testCalculatePointsSimpleReceipt() {
+    // Create the receipt and item objects
+    Item item = new Item("Pepsi - 12-oz", new BigDecimal("1.25"));
+    List<Item> items = List.of(item);
+
+    testReceipt = new Receipt(
+        "Target",                        // Retailer
+        LocalDate.parse("2022-01-02"),     // Purchase Date
+        LocalTime.parse("13:13"),          // Purchase Time
+        items,                                  // Items
+        new BigDecimal("1.25")              // Total Amount
+    );
+
+    // Calculate the points
+    int points = receiptPointsService.calculatePoints(testReceipt);
+
+    // Verify the total points and log the breakdown
+    int expectedPoints = 0;
+    expectedPoints += 6;  // "Target" has 6 alphanumeric characters
+    expectedPoints += 0;  // Total is not a round dollar amount
+    expectedPoints += 25; // Total is a multiple of 0.25
+    expectedPoints += 0;  // Only 1 item (not a pair)
+    expectedPoints += 0;  // Item description length (trimmed) is 13, not a multiple of 3
+    expectedPoints += 0;  // Purchase day (2) is not odd
+    expectedPoints += 0;  // Purchase time (13:13) is outside 14:00-16:00
+
+    assertEquals(expectedPoints, points);
+  }
+
+  /**
+   * Testing the overall calculatePoints() method based on the receipt provided in the
+   * /examples/morning-receipt.json file.
+   *
+   * @Code {
+   *     "retailer": "Walgreens",
+   *     "purchaseDate": "2022-01-02",
+   *     "purchaseTime": "08:13",
+   *     "total": "2.65",
+   *     "items": [
+   *         {"shortDescription": "Pepsi - 12-oz", "price": "1.25"},
+   *         {"shortDescription": "Dasani", "price": "1.40"}
+   *     ]
+   * }
+   *
+   * Total points should be 32.
+   */
+  @Test
+  void testCalculatePointsMorningReceipt() {
+    // Create the receipt and item objects
+    Item item1 = new Item("Pepsi - 12-oz", new BigDecimal("1.25"));
+    Item item2 = new Item("Dasani", new BigDecimal("1.40"));
+    List<Item> items = List.of(item1, item2);
+
+    testReceipt = new Receipt(
+        "Walgreens",                      // Retailer
+        LocalDate.parse("2022-01-02"),      // Purchase Date
+        LocalTime.parse("08:13"),           // Purchase Time
+        items,                                   // Items
+        new BigDecimal("2.65")               // Total Amount
+    );
+
+    // Calculate the points
+    int points = receiptPointsService.calculatePoints(testReceipt);
+
+    // Verify the total points and log the breakdown
+    int expectedPoints = 0;
+    expectedPoints += 9;    // "Walgreens" has 9 alphanumeric characters
+    expectedPoints += 0;    // Total is not a round dollar amount
+    expectedPoints += 0;    // Total is not a multiple of 0.25
+    expectedPoints += 5;    // 2 items (1 pair) => 5 points
+    expectedPoints += 1;    // Dasani requires 1 point
+                            // "Pepsi - 12-oz" (trimmed length: 13, not a multiple of 3)
+                            // "Dasani" (trimmed length: 6, is a multiple of 3, ceil(0.2 * 1.40) )
+    expectedPoints += 0;  // Purchase day (2) is not odd
+    expectedPoints += 0;  // Purchase time (08:13) is outside 14:00-16:00
+
+    assertEquals(expectedPoints, points);
+  }
+
+  /**
+   * Testing the overall calculatePoints() method based on the "Target" receipt provided in the
+   * README.md file's `example` section.
+   *
+   * @Code {
+   *     "retailer": "Target",
+   *     "purchaseDate": "2022-01-01",
+   *     "purchaseTime": "13:01",
+   *     "items": [
+   *         {"shortDescription": "Mountain Dew 12PK", "price": "6.49"},
+   *         {"shortDescription": "Emils Cheese Pizza", "price": "12.25"},
+   *         {"shortDescription": "Knorr Creamy Chicken", "price": "1.26"},
+   *         {"shortDescription": "Doritos Nacho Cheese", "price": "3.35"},
+   *         {"shortDescription": "   Klarbrunn 12-PK 12 FL OZ  ", "price": "12.00"}
+   *     ],
+   *     "total": "35.35"
+   * }
+   *
+   * Total Points: 28
+   */
+  @Test
+  void testCalculatePointsAfternoonReceipt() {
+    // Create the receipt and item objects
+    Item item1 = new Item("Mountain Dew 12PK", new BigDecimal("6.49"));
+    Item item2 = new Item("Emils Cheese Pizza", new BigDecimal("12.25"));
+    Item item3 = new Item("Knorr Creamy Chicken", new BigDecimal("1.26"));
+    Item item4 = new Item("Doritos Nacho Cheese", new BigDecimal("3.35"));
+    Item item5 = new Item("   Klarbrunn 12-PK 12 FL OZ  ", new BigDecimal("12.00"));
+    List<Item> items = List.of(item1, item2, item3, item4, item5);
+
+    testReceipt = new Receipt(
+        "Target",                         // Retailer
+        LocalDate.parse("2022-01-01"),      // Purchase Date
+        LocalTime.parse("13:01"),           // Purchase Time
+        items,                                   // Items
+        new BigDecimal("35.35")              // Total Amount
+    );
+
+    // Calculate the points
+    int points = receiptPointsService.calculatePoints(testReceipt);
+
+    // Verify the total points and log the breakdown
+    int expectedPoints = 0;
+    expectedPoints += 6;  // "Target" has 6 alphanumeric characters
+    expectedPoints += 0;  // Total is not a round dollar amount
+    expectedPoints += 0;  // Total is not a multiple of 0.25
+    expectedPoints += 10; // 5 items (2 pairs) => 10 points
+    expectedPoints += 0;  // "Mountain Dew 12PK" (trimmed length: 17, not a multiple of 3)
+    expectedPoints += 3;  // "Emils Cheese Pizza" (trimmed length: 18, multiple of 3),
+                          // ceil(0.2 * 12.25) = 3
+    expectedPoints += 0;  // "Knorr Creamy Chicken" (trimmed length: 20, not a multiple of 3)
+    expectedPoints += 0;  // "Doritos Nacho Cheese" (trimmed length: 20, not a multiple of 3)
+    expectedPoints += 3;  // "Klarbrunn 12-PK 12 FL OZ" (trimmed length: 24, multiple of 3),
+                          // ceil(0.2 * 12.00) = 3
+    expectedPoints += 6;  // Purchase day (1) is odd
+    expectedPoints += 0;  // Purchase time (13:01) is outside 14:00-16:00
+
+    assertEquals(expectedPoints, points);
+  }
+
+  /**
+   * Testing the overall calculatePoints() method based on the "M&M Corner Market" receipt provided
+   * in the prompt example.
+   *
+   * @Code {
+   *     "retailer": "M&M Corner Market",
+   *     "purchaseDate": "2022-03-20",
+   *     "purchaseTime": "14:33",
+   *     "items": [
+   *         {"shortDescription": "Gatorade", "price": "2.25"},
+   *         {"shortDescription": "Gatorade", "price": "2.25"},
+   *         {"shortDescription": "Gatorade", "price": "2.25"},
+   *         {"shortDescription": "Gatorade", "price": "2.25"}
+   *     ],
+   *     "total": "9.00"
+   * }
+   *
+   * Total Points: 109
+   */
+  @Test
+  void testCalculatePointsCornerMarketReceipt() {
+    // Create the receipt and item objects
+    Item item1 = new Item("Gatorade", new BigDecimal("2.25"));
+    Item item2 = new Item("Gatorade", new BigDecimal("2.25"));
+    Item item3 = new Item("Gatorade", new BigDecimal("2.25"));
+    Item item4 = new Item("Gatorade", new BigDecimal("2.25"));
+    List<Item> items = List.of(item1, item2, item3, item4);
+
+    testReceipt = new Receipt(
+        "M&M Corner Market",              // Retailer
+        LocalDate.parse("2022-03-20"),      // Purchase Date
+        LocalTime.parse("14:33"),           // Purchase Time
+        items,                                   // Items
+        new BigDecimal("9.00")               // Total Amount
+    );
+
+    // Calculate the points
+    int points = receiptPointsService.calculatePoints(testReceipt);
+
+    // Verify the total points and log the breakdown
+    int expectedPoints = 0;
+    expectedPoints += 14; // "M&M Corner Market" has 14 alphanumeric characters
+    expectedPoints += 50; // Total is a round dollar amount
+    expectedPoints += 25; // Total is a multiple of 0.25
+    expectedPoints += 10; // 4 items (2 pairs @ 5 points each) => 10 points
+    expectedPoints += 0;  // "Gatorade" (trimmed length: 8, not a multiple of 3)
+    expectedPoints += 0;  // Purchase day (20) is not odd
+    expectedPoints += 10; // Purchase time (14:33) is between 14:00-16:00
+
+    assertEquals(expectedPoints, points);
+  }
 }

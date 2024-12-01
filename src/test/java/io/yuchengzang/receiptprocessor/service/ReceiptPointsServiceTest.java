@@ -839,7 +839,7 @@ public class ReceiptPointsServiceTest {
    * Total Points: 28
    */
   @Test
-  void testCalculatePointsAfternoonReceipt() {
+  void testCalculatePointsTargetReceipt() {
     // Create the receipt and item objects
     Item item1 = new Item("Mountain Dew 12PK", new BigDecimal("6.49"));
     Item item2 = new Item("Emils Cheese Pizza", new BigDecimal("12.25"));
@@ -898,7 +898,7 @@ public class ReceiptPointsServiceTest {
    * Total Points: 109
    */
   @Test
-  void testCalculatePointsCornerMarketReceipt() {
+  void testCalculatePointsMnMCornerMarketReceipt() {
     // Create the receipt and item objects
     Item item1 = new Item("Gatorade", new BigDecimal("2.25"));
     Item item2 = new Item("Gatorade", new BigDecimal("2.25"));

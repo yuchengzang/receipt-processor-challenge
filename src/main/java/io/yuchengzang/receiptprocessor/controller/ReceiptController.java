@@ -2,15 +2,13 @@ package io.yuchengzang.receiptprocessor.controller;
 
 import java.util.Map;
 
+import org.hibernate.validator.constraints.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 
@@ -30,7 +28,10 @@ public class ReceiptController {
   private final ReceiptPointsService receiptPointsService;
 
   // Constructor injection for the service and repository
-  public ReceiptController(ReceiptRepository receiptRepository, ReceiptPointsService receiptPointsService) {
+  public ReceiptController(
+      ReceiptRepository receiptRepository,
+      ReceiptPointsService receiptPointsService
+  ) {
     this.receiptRepository = receiptRepository;
     this.receiptPointsService = receiptPointsService;
   }
@@ -62,8 +63,45 @@ public class ReceiptController {
 
     } catch (Exception e) {
       logger.error("Failed to save receipt: {}", e.getMessage());
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-          Map.of("error", "Failed to process the receipt"));
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(Map.of("error", "Failed to process the receipt"));
+    }
+  }
+
+  /**
+   * Get the receipt points for a given receipt ID.
+   *
+   * This is mapped to the /receipts/{id}/points endpoint's GET method. This endpoint calculates the
+   * points for a receipt and returns the points as a response. The points are calculated based on
+   * the items in the receipt and the purchase date.
+   *
+   * @param id The ID of the receipt for which the points are to be calculated.
+   * @return A response entity containing the points for the receipt.
+   */
+  @GetMapping("/{id}/points")
+  public ResponseEntity<Object> getReceiptPoints(@UUID @PathVariable String id) {
+    try {
+      // Get the receipt from the repository
+      Receipt receipt = receiptRepository.findById(id);
+
+      // Check if the given receipt ID exists in the repository
+      if (receipt == null) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+            .body(Map.of("error", "Receipt not found"));
+      }
+
+      // Calculate the points for the receipt
+      int points = receiptPointsService.calculatePoints(receipt);
+
+      // Log the successful calculation of points
+      logger.info("Points calculated for receipt with ID '{}': {}", id, points);
+
+      // Return the points as a response
+      return ResponseEntity.ok(Map.of("points", points));
+    } catch (Exception e) {
+      logger.error("Failed to calculate points for receipt: {}", e.getMessage());
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(Map.of("error", "Failed to calculate points for the receipt"));
     }
   }
 

@@ -6,12 +6,15 @@ import java.time.LocalTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.stereotype.Service;
+
 import io.yuchengzang.receiptprocessor.model.Receipt;
 import io.yuchengzang.receiptprocessor.model.Item;
 
 /**
  * The ReceiptPointsService class provides services for calculating points from receipts.
  */
+@Service
 public class ReceiptPointsService {
 
   // Create a logger for the ReceiptPointsService class

@@ -6,6 +6,11 @@ import java.util.List;
 import java.math.BigDecimal;
 import java.util.UUID;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.PositiveOrZero;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,6 +24,7 @@ public class Receipt {
   /**
    * The unique identifier of the receipt.
    * This value must comply with the UUID format.
+   * The value is generated automatically, so no validation needed.
    */
    private final String id = UUID.randomUUID().toString();
 
@@ -27,6 +33,7 @@ public class Receipt {
    * For example, "Target", "Walmart" or "Costco".
    * This value must not be null or blank.
    */
+  @NotBlank(message = "Retailer name is required and must not be blank.")
   private String retailer;
 
   /**
@@ -34,6 +41,7 @@ public class Receipt {
    * For example, "2022-01-01".
    * This value must not be null.
    */
+  @NotNull(message = "Purchase date is required.")
   private LocalDate purchaseDate;
 
   /**
@@ -41,12 +49,15 @@ public class Receipt {
    * For example, "13:01".
    * This value must not be null.
    */
+  @NotNull(message = "Purchase time is required.")
   private LocalTime purchaseTime;
 
   /**
    * The list of items in the receipt.
    * This value must not be null.
    */
+  @NotNull(message = "Items list is required and must not be null.")
+  @Valid  // Validate the items in the list
   private List<Item> items;
 
   /**
@@ -54,7 +65,9 @@ public class Receipt {
    * For example, 100.00 or 50.00.
    * This value must not be null or negative.
    */
-  private BigDecimal totalAmount;
+  @NotNull(message = "Total amount is required.")
+  @PositiveOrZero(message = "Total amount must be positive or zero.")
+  private BigDecimal total;
 
   /**
    * The default constructor of the Receipt class.
@@ -70,27 +83,27 @@ public class Receipt {
    * @param purchaseDate the purchase date of the receipt
    * @param purchaseTime the purchase time of the receipt
    * @param items the list of items in the receipt
-   * @param totalAmount the total amount of the receipt
+   * @param total the total amount of the receipt
    */
   public Receipt(
       String retailer,
       LocalDate purchaseDate,
       LocalTime purchaseTime,
       List<Item> items,
-      BigDecimal totalAmount
+      BigDecimal total
   ) {
     // Validate the inputs before setting the values
     validateRetailer(retailer);
     validatePurchaseDate(purchaseDate);
     validatePurchaseTime(purchaseTime);
     validateItems(items);
-    validateTotalAmount(totalAmount);
+    validateTotalAmount(total);
 
     this.retailer = retailer;
     this.purchaseDate = purchaseDate;
     this.purchaseTime = purchaseTime;
     this.items = items;
-    this.totalAmount = totalAmount;
+    this.total = total;
 
     // Log the creation of the receipt
     logger.info("Receipt ID '{}' created", id);
@@ -188,18 +201,18 @@ public class Receipt {
    *
    * @return the total amount of the receipt
    */
-  public BigDecimal getTotalAmount() {
-    return totalAmount;
+  public BigDecimal getTotal() {
+    return total;
   }
 
   /**
    * Set the total amount of the receipt, such as 100.00 or 3.35.
    *
-   * @param totalAmount the total amount of the receipt
+   * @param total the total amount of the receipt
    */
-  public void setTotalAmount(BigDecimal totalAmount) {
-    validateTotalAmount(totalAmount);
-    this.totalAmount = totalAmount;
+  public void setTotal(BigDecimal total) {
+    validateTotalAmount(total);
+    this.total = total;
   }
 
   /**
@@ -215,7 +228,7 @@ public class Receipt {
         ", purchaseDate=" + purchaseDate +
         ", purchaseTime=" + purchaseTime +
         ", items=" + items +
-        ", totalAmount=" + totalAmount +
+        ", totalAmount=" + total +
         '}';
   }
 
@@ -238,7 +251,7 @@ public class Receipt {
         purchaseDate.equals(receipt.purchaseDate) &&
         purchaseTime.equals(receipt.purchaseTime) &&
         items.equals(receipt.items) &&
-        totalAmount.equals(receipt.totalAmount);
+        total.equals(receipt.total);
   }
 
   /**

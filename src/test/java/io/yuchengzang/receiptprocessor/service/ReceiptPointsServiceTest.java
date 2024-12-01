@@ -118,7 +118,7 @@ public class ReceiptPointsServiceTest {
    */
   @Test
   void testValidCalculatePointsFromTotalAmountRoundDollarRound1() {
-    testReceipt.setTotalAmount(new BigDecimal("100.00"));
+    testReceipt.setTotal(new BigDecimal("100.00"));
     assertEquals(50,
         receiptPointsService.calculatePointsFromTotalAmountRoundDollar(testReceipt));
   }
@@ -130,7 +130,7 @@ public class ReceiptPointsServiceTest {
    */
   @Test
   void testValidCalculatePointsFromTotalAmountRoundDollarRound2() {
-    testReceipt.setTotalAmount(new BigDecimal("0.00"));
+    testReceipt.setTotal(new BigDecimal("0.00"));
     assertEquals(50,
         receiptPointsService.calculatePointsFromTotalAmountRoundDollar(testReceipt));
   }
@@ -143,7 +143,7 @@ public class ReceiptPointsServiceTest {
    */
   @Test
   void testValidCalculatePointsFromTotalAmountRoundDollarRound3() {
-    testReceipt.setTotalAmount(new BigDecimal("12"));
+    testReceipt.setTotal(new BigDecimal("12"));
     assertEquals(50,
         receiptPointsService.calculatePointsFromTotalAmountRoundDollar(testReceipt));
   }
@@ -156,7 +156,7 @@ public class ReceiptPointsServiceTest {
    */
   @Test
   void testValidCalculatePointsFromTotalAmountRoundDollarNonRound1() {
-    testReceipt.setTotalAmount(new BigDecimal("0.01"));
+    testReceipt.setTotal(new BigDecimal("0.01"));
     assertEquals(0,
         receiptPointsService.calculatePointsFromTotalAmountRoundDollar(testReceipt));
   }
@@ -169,7 +169,7 @@ public class ReceiptPointsServiceTest {
    */
   @Test
   void testValidCalculatePointsFromTotalAmountRoundDollarNonRound2() {
-    testReceipt.setTotalAmount(new BigDecimal("99.99"));
+    testReceipt.setTotal(new BigDecimal("99.99"));
     assertEquals(0,
         receiptPointsService.calculatePointsFromTotalAmountRoundDollar(testReceipt));
   }
@@ -182,7 +182,7 @@ public class ReceiptPointsServiceTest {
    */
   @Test
   void testValidCalculatePointsFromTotalAmountRoundDollarNonRound3() {
-    testReceipt.setTotalAmount(new BigDecimal("10.50"));
+    testReceipt.setTotal(new BigDecimal("10.50"));
     assertEquals(0,
         receiptPointsService.calculatePointsFromTotalAmountRoundDollar(testReceipt));
   }
@@ -201,7 +201,7 @@ public class ReceiptPointsServiceTest {
    */
   @Test
   void testValidCalculatePointsFromTotalAmountMultipleOfQuarterMultiple1() {
-    testReceipt.setTotalAmount(new BigDecimal("12.25"));
+    testReceipt.setTotal(new BigDecimal("12.25"));
     assertEquals(25,
         receiptPointsService.calculatePointsFromTotalAmountMultipleOfQuarter(testReceipt));
   }
@@ -213,7 +213,7 @@ public class ReceiptPointsServiceTest {
    */
   @Test
   void testValidCalculatePointsFromTotalAmountMultipleOfQuarterMultiple2() {
-    testReceipt.setTotalAmount(new BigDecimal("15.50"));
+    testReceipt.setTotal(new BigDecimal("15.50"));
     assertEquals(25,
         receiptPointsService.calculatePointsFromTotalAmountMultipleOfQuarter(testReceipt));
   }
@@ -225,7 +225,7 @@ public class ReceiptPointsServiceTest {
    */
   @Test
   void testValidCalculatePointsFromTotalAmountMultipleOfQuarterMultiple3() {
-    testReceipt.setTotalAmount(new BigDecimal("10.75"));
+    testReceipt.setTotal(new BigDecimal("10.75"));
     assertEquals(25,
         receiptPointsService.calculatePointsFromTotalAmountMultipleOfQuarter(testReceipt));
   }
@@ -237,7 +237,7 @@ public class ReceiptPointsServiceTest {
    */
   @Test
   void testValidCalculatePointsFromTotalAmountMultipleOfQuarterMultiple4() {
-    testReceipt.setTotalAmount(new BigDecimal("99.00"));
+    testReceipt.setTotal(new BigDecimal("99.00"));
     assertEquals(25,
         receiptPointsService.calculatePointsFromTotalAmountMultipleOfQuarter(testReceipt));
   }
@@ -249,7 +249,7 @@ public class ReceiptPointsServiceTest {
    */
   @Test
   void testValidCalculatePointsFromTotalAmountMultipleOfQuarterNonMultiple1() {
-    testReceipt.setTotalAmount(new BigDecimal("0.01"));
+    testReceipt.setTotal(new BigDecimal("0.01"));
     assertEquals(0,
         receiptPointsService.calculatePointsFromTotalAmountMultipleOfQuarter(testReceipt));
   }
@@ -261,7 +261,7 @@ public class ReceiptPointsServiceTest {
    */
   @Test
   void testValidCalculatePointsFromTotalAmountMultipleOfQuarterNonMultiple2() {
-    testReceipt.setTotalAmount(new BigDecimal("12.26"));
+    testReceipt.setTotal(new BigDecimal("12.26"));
     assertEquals(0,
         receiptPointsService.calculatePointsFromTotalAmountMultipleOfQuarter(testReceipt));
   }
@@ -273,7 +273,7 @@ public class ReceiptPointsServiceTest {
    */
   @Test
   void testValidCalculatePointsFromTotalAmountMultipleOfQuarterNonMultiple3() {
-    testReceipt.setTotalAmount(new BigDecimal("100.49"));
+    testReceipt.setTotal(new BigDecimal("100.49"));
     assertEquals(0,
         receiptPointsService.calculatePointsFromTotalAmountMultipleOfQuarter(testReceipt));
   }

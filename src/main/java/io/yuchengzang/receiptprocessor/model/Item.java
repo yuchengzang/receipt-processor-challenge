@@ -2,6 +2,10 @@ package io.yuchengzang.receiptprocessor.model;
 
 import java.math.BigDecimal;
 
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.NotBlank;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,12 +21,15 @@ public class Item {
    * For example, "Mountain Dew 12PK" or "Knorr Creamy Chicken".
    * This value must not be null or blank.
    */
+  @NotBlank(message = "Short description is required and must not be blank.")
   private String shortDescription;
 
   /**
    * The price of the item.
    * For example, 5.99 or 2.49. This value must not be negative.
    */
+  @NotNull(message = "Price is required.")
+  @PositiveOrZero(message = "Price must be zero or positive.")
   private BigDecimal price;
 
   /**

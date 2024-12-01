@@ -96,13 +96,13 @@ public class ReceiptPointsService {
    */
   protected int calculatePointsFromTotalAmountRoundDollar(Receipt receipt)
       throws IllegalArgumentException {
-    if (receipt == null || receipt.getTotalAmount() == null) {
+    if (receipt == null || receipt.getTotal() == null) {
       logger.error("Receipt or total amount cannot be null.");
       throw new IllegalArgumentException("Receipt or total amount cannot be null.");
     }
 
     // Compute the points based on the total amount
-    BigDecimal totalAmount = receipt.getTotalAmount();
+    BigDecimal totalAmount = receipt.getTotal();
 
     // Check if the total amount is a round dollar amount.
     // remainder(BigDecimal.ONE): Computes the fractional part of the number.
@@ -136,13 +136,13 @@ public class ReceiptPointsService {
    */
   protected int calculatePointsFromTotalAmountMultipleOfQuarter(Receipt receipt)
       throws IllegalArgumentException {
-    if (receipt == null || receipt.getTotalAmount() == null) {
+    if (receipt == null || receipt.getTotal() == null) {
       logger.error("Receipt or total amount cannot be null.");
       throw new IllegalArgumentException("Receipt or total amount cannot be null.");
     }
 
     // Compute the points based on the total amount
-    BigDecimal totalAmount = receipt.getTotalAmount();
+    BigDecimal totalAmount = receipt.getTotal();
 
     // Check if the total amount is a multiple of 0.25
     boolean isMultipleOfQuarter = totalAmount.remainder(new BigDecimal("0.25"))

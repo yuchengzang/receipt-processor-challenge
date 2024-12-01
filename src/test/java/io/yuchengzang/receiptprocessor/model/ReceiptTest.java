@@ -30,7 +30,7 @@ public class ReceiptTest {
     assertEquals(LocalDate.of(2022, 1, 1), receipt.getPurchaseDate());
     assertEquals(LocalTime.of(13, 1), receipt.getPurchaseTime());
     assertEquals(items, receipt.getItems());
-    assertEquals(new BigDecimal("8.48"), receipt.getTotalAmount());
+    assertEquals(new BigDecimal("8.48"), receipt.getTotal());
   }
 
   @Test
@@ -53,7 +53,7 @@ public class ReceiptTest {
     assertEquals(LocalDate.of(2022, 1, 1), receipt.getPurchaseDate());
     assertEquals(LocalTime.of(13, 1), receipt.getPurchaseTime());
     assertEquals(items, receipt.getItems());
-    assertEquals(new BigDecimal("8.48"), receipt.getTotalAmount());
+    assertEquals(new BigDecimal("8.48"), receipt.getTotal());
   }
 
   @Test
@@ -75,7 +75,7 @@ public class ReceiptTest {
     assertEquals(LocalDate.of(2022, 1, 1), receipt.getPurchaseDate());
     assertEquals(LocalTime.of(13, 1), receipt.getPurchaseTime());
     assertEquals(items, receipt.getItems());
-    assertEquals(new BigDecimal("5.99"), receipt.getTotalAmount());
+    assertEquals(new BigDecimal("5.99"), receipt.getTotal());
   }
 
   @Test
@@ -98,7 +98,7 @@ public class ReceiptTest {
     assertEquals(LocalDate.of(2022, 1, 1), receipt.getPurchaseDate());
     assertEquals(LocalTime.of(13, 1), receipt.getPurchaseTime());
     assertEquals(items, receipt.getItems());
-    assertEquals(new BigDecimal("0.00"), receipt.getTotalAmount());
+    assertEquals(new BigDecimal("0.00"), receipt.getTotal());
   }
 
   @Test
@@ -470,8 +470,8 @@ public class ReceiptTest {
       new BigDecimal("8.48")
     );
 
-    receipt.setTotalAmount(new BigDecimal("10.00"));
-    assertEquals(new BigDecimal("10.00"), receipt.getTotalAmount());
+    receipt.setTotal(new BigDecimal("10.00"));
+    assertEquals(new BigDecimal("10.00"), receipt.getTotal());
   }
 
   @Test
@@ -487,8 +487,8 @@ public class ReceiptTest {
         new BigDecimal("0.00")
     );
 
-    receipt.setTotalAmount(new BigDecimal("0.00"));
-    assertEquals(new BigDecimal("0.00"), receipt.getTotalAmount());
+    receipt.setTotal(new BigDecimal("0.00"));
+    assertEquals(new BigDecimal("0.00"), receipt.getTotal());
   }
 
   @Test
@@ -505,7 +505,7 @@ public class ReceiptTest {
     );
 
     assertThrows(IllegalArgumentException.class, () -> {
-      receipt.setTotalAmount(null);
+      receipt.setTotal(null);
     });
   }
 
@@ -523,7 +523,7 @@ public class ReceiptTest {
     );
 
     assertThrows(IllegalArgumentException.class, () -> {
-      receipt.setTotalAmount(new BigDecimal("-8.48"));
+      receipt.setTotal(new BigDecimal("-8.48"));
     });
   }
 }

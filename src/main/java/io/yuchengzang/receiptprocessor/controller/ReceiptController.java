@@ -67,7 +67,7 @@ public class ReceiptController {
       logger.info("Receipt with ID '{}' processed successfully.", receipt.getId());
 
       // Return a success response with HTTP 201 Created
-      return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("id", receipt.getId()));
+      return ResponseEntity.status(HttpStatus.OK).body(Map.of("id", receipt.getId()));
     } catch (Exception e) {
       logger.error("Failed to save receipt due to '{}'", e.getMessage());
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -57,6 +58,7 @@ public class Receipt {
    * This value must not be null.
    */
   @NotNull(message = "Items list is required and must not be null.")
+  @NotEmpty(message = "Items list must not be empty.")
   @Valid  // Validate the items in the list
   private List<Item> items;
 
@@ -307,10 +309,6 @@ public class Receipt {
       throw new IllegalArgumentException("Items must not be null");
     }
 
-    if (items.isEmpty()) {
-      logger.error("Invalid items for receipt ID '{}': '{}' is empty", id, items);
-      throw new IllegalArgumentException("Items must not be empty");
-    }
   }
 
   /**

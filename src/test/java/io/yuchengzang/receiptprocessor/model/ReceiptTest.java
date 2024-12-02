@@ -187,19 +187,6 @@ public class ReceiptTest {
   }
 
   @Test
-  void testInvalidReceiptConstructorWithEmptyItems() {
-    assertThrows(IllegalArgumentException.class, () -> {
-      new Receipt(
-        "Walmart",
-        LocalDate.of(2022, 1, 1),
-        LocalTime.of(13, 1),
-        List.of(),
-        new BigDecimal("8.48")
-      );
-    });
-  }
-
-  @Test
   void testInvalidReceiptConstructorWithNullTotalAmount() {
     List<Item> items = List.of(
       new Item("Mountain Dew 12PK", new BigDecimal("5.99")),
@@ -434,26 +421,6 @@ public class ReceiptTest {
 
     assertThrows(IllegalArgumentException.class, () -> {
       receipt.setItems(null);
-    });
-  }
-
-  @Test
-  void testInvalidReceiptSetItemsWithEmpty() {
-    List<Item> items = List.of(
-      new Item("Mountain Dew 12PK", new BigDecimal("5.99")),
-      new Item("Knorr Creamy Chicken", new BigDecimal("2.49"))
-    );
-
-    Receipt receipt = new Receipt(
-      "Walmart",
-      LocalDate.of(2022, 1, 1),
-      LocalTime.of(13, 1),
-      items,
-      new BigDecimal("8.48")
-    );
-
-    assertThrows(IllegalArgumentException.class, () -> {
-      receipt.setItems(List.of());
     });
   }
 

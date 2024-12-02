@@ -8,13 +8,17 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import static org.hamcrest.Matchers.hasEntry;
 
+import static org.mockito.Mockito.*;
+
 import io.yuchengzang.receiptprocessor.repository.ReceiptRepository;
 import io.yuchengzang.receiptprocessor.service.ReceiptPointsService;
+import io.yuchengzang.receiptprocessor.model.Receipt;
 
 @WebMvcTest(ReceiptController.class)
 public class ReceiptControllerTest {
@@ -145,4 +149,66 @@ public class ReceiptControllerTest {
         .andExpect(status().isBadRequest());
   }
 
+  /**
+   * Test to retrieve points for a valid receipt ID.
+   *
+   * @throws Exception Being thrown by the mockMvc.perform() method, and will automatically be
+   *                   caught by JUnit and reported as a test failure.
+   */
+  @Test
+  void testGetReceiptPointsValid_ShouldReturnPoints() throws Exception {
+    String receiptId = "123e4567-e89b-12d3-a456-426614174000";
+    Receipt mockReceipt = mock(Receipt.class);
+
+    when(receiptRepository.findById(receiptId)).thenReturn(mockReceipt);
+    when(receiptPointsService.calculatePoints(mockReceipt)).thenReturn(50);
+
+    mockMvc.perform(get("/receipts/{id}/points", receiptId)
+            .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.points").value(50));
+
+    verify(receiptRepository, times(1)).findById(receiptId);
+    verify(receiptPointsService, times(1)).calculatePoints(mockReceipt);
+  }
+
+  /**
+   * Test to retrieve points for an invalid UUID.
+   *
+   * @throws Exception Being thrown by the mockMvc.perform() method, and will automatically be
+   *                   caught by JUnit and reported as a test failure.
+   */
+  @Test
+  void testGetReceiptPointsInvalidUUID_ShouldReturnBadRequest() throws Exception {
+    String invalidUUID = "invalid-uuid";
+
+    mockMvc.perform(get("/receipts/{id}/points", invalidUUID)
+            .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.id").value("Invalid UUID"));
+
+    verify(receiptRepository, times(0)).findById(any());
+    verify(receiptPointsService, times(0)).calculatePoints(any());
+  }
+
+  /**
+   * Test to retrieve points for a non-existent receipt ID.
+   *
+   * @throws Exception Being thrown by the mockMvc.perform() method, and will automatically be
+   *                   caught by JUnit and reported as a test failure.
+   */
+  @Test
+  void testGetReceiptPointsNonExistent_ShouldReturnNotFound() throws Exception {
+    String receiptId = "123e4567-e89b-12d3-a456-426614174000";
+
+    when(receiptRepository.findById(receiptId)).thenReturn(null);
+
+    mockMvc.perform(get("/receipts/{id}/points", receiptId)
+            .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.error").value("Receipt not found"));
+
+    verify(receiptRepository, times(1)).findById(receiptId);
+    verify(receiptPointsService, times(0)).calculatePoints(any());
+  }
 }

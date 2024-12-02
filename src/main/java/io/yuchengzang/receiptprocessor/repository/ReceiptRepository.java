@@ -6,11 +6,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.stereotype.Repository;
+
 import io.yuchengzang.receiptprocessor.model.Receipt;
 
 /**
  * The ReceiptRepository class is a repository for storing receipts.
  */
+@Repository
 public class ReceiptRepository {
 
   // Create a logger for the ReceiptRepository class

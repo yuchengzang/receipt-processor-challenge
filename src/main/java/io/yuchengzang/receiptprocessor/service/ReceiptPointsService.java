@@ -6,12 +6,15 @@ import java.time.LocalTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.stereotype.Service;
+
 import io.yuchengzang.receiptprocessor.model.Receipt;
 import io.yuchengzang.receiptprocessor.model.Item;
 
 /**
  * The ReceiptPointsService class provides services for calculating points from receipts.
  */
+@Service
 public class ReceiptPointsService {
 
   // Create a logger for the ReceiptPointsService class
@@ -93,13 +96,13 @@ public class ReceiptPointsService {
    */
   protected int calculatePointsFromTotalAmountRoundDollar(Receipt receipt)
       throws IllegalArgumentException {
-    if (receipt == null || receipt.getTotalAmount() == null) {
+    if (receipt == null || receipt.getTotal() == null) {
       logger.error("Receipt or total amount cannot be null.");
       throw new IllegalArgumentException("Receipt or total amount cannot be null.");
     }
 
     // Compute the points based on the total amount
-    BigDecimal totalAmount = receipt.getTotalAmount();
+    BigDecimal totalAmount = receipt.getTotal();
 
     // Check if the total amount is a round dollar amount.
     // remainder(BigDecimal.ONE): Computes the fractional part of the number.
@@ -133,13 +136,13 @@ public class ReceiptPointsService {
    */
   protected int calculatePointsFromTotalAmountMultipleOfQuarter(Receipt receipt)
       throws IllegalArgumentException {
-    if (receipt == null || receipt.getTotalAmount() == null) {
+    if (receipt == null || receipt.getTotal() == null) {
       logger.error("Receipt or total amount cannot be null.");
       throw new IllegalArgumentException("Receipt or total amount cannot be null.");
     }
 
     // Compute the points based on the total amount
-    BigDecimal totalAmount = receipt.getTotalAmount();
+    BigDecimal totalAmount = receipt.getTotal();
 
     // Check if the total amount is a multiple of 0.25
     boolean isMultipleOfQuarter = totalAmount.remainder(new BigDecimal("0.25"))

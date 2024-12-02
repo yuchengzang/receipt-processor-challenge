@@ -2,22 +2,27 @@ package io.yuchengzang.receiptprocessor.controller;
 
 import java.util.Map;
 
-import org.hibernate.validator.constraints.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.validation.annotation.Validated;
 
 import jakarta.validation.Valid;
+import org.hibernate.validator.constraints.UUID;
 
 import io.yuchengzang.receiptprocessor.service.ReceiptPointsService;
 import io.yuchengzang.receiptprocessor.repository.ReceiptRepository;
 import io.yuchengzang.receiptprocessor.model.Receipt;
 
+@Validated
 @RestController
 @RequestMapping("/receipts")
+/**
+ * The ReceiptController class is a REST controller for handling receipt-related operations.
+ */
 public class ReceiptController {
 
   // Create a logger for the ReceiptController class
@@ -81,7 +86,7 @@ public class ReceiptController {
    * @return A response entity containing the points for the receipt.
    */
   @GetMapping("/{id}/points")
-  public ResponseEntity<Object> getReceiptPoints(@UUID @PathVariable String id) {
+  public ResponseEntity<Object> getReceiptPoints(@UUID(message = "Invalid UUID") @PathVariable String id) {
     try {
       // Log the receipt ID received
       logger.info("Received ID for points calculation request: '{}'", id);
@@ -109,5 +114,4 @@ public class ReceiptController {
           .body(Map.of("error", "Failed to calculate points for the receipt"));
     }
   }
-
 }

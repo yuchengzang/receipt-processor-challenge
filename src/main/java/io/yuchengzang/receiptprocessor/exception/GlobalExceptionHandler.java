@@ -10,6 +10,7 @@ import jakarta.validation.ConstraintViolationException;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -101,6 +102,24 @@ public class GlobalExceptionHandler {
 
     // Return the error response with BAD_REQUEST status
     return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+  }
+
+  /**
+   * Handles exceptions when the request body cannot be read due to malformed JSON.
+   *
+   * @param ex the HttpMessageNotReadableException to handle
+   * @return a ResponseEntity containing a descriptive error message with a BAD_REQUEST (400) status
+   */
+  @ExceptionHandler(HttpMessageNotReadableException.class)
+  public ResponseEntity<Map<String, String>> handleHttpMessageNotReadableException(
+      HttpMessageNotReadableException ex) {
+    // Log the error
+    logger.error("Malformed JSON request, Exception: '{}'", ex.getMessage());
+
+    // Return a BAD_REQUEST response with a descriptive error message
+    Map<String, String> errorResponse = new HashMap<>();
+    errorResponse.put("error", "Malformed JSON request.");
+    return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
   }
 
   /**

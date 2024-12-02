@@ -52,17 +52,19 @@ public class ReceiptController {
   @PostMapping("/process")
   public ResponseEntity<Object> addReceipt(@Valid @RequestBody Receipt receipt) {
     try {
+      // Log the receipt ID received
+      logger.info("Received receipt with ID '{}'.", receipt.getId());
+
       // Save the receipt to the repository
       receiptRepository.save(receipt);
 
       // Log the successful addition of the receipt
-      logger.info("Receipt with ID '{}' added successfully.", receipt.getId());
+      logger.info("Receipt with ID '{}' processed successfully.", receipt.getId());
 
       // Return a success response with HTTP 201 Created
       return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("id", receipt.getId()));
-
     } catch (Exception e) {
-      logger.error("Failed to save receipt: {}", e.getMessage());
+      logger.error("Failed to save receipt due to '{}'", e.getMessage());
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
           .body(Map.of("error", "Failed to process the receipt"));
     }
@@ -81,6 +83,9 @@ public class ReceiptController {
   @GetMapping("/{id}/points")
   public ResponseEntity<Object> getReceiptPoints(@UUID @PathVariable String id) {
     try {
+      // Log the receipt ID received
+      logger.info("Received ID for points calculation request: '{}'", id);
+
       // Get the receipt from the repository
       Receipt receipt = receiptRepository.findById(id);
 
@@ -94,12 +99,12 @@ public class ReceiptController {
       int points = receiptPointsService.calculatePoints(receipt);
 
       // Log the successful calculation of points
-      logger.info("Points calculated for receipt with ID '{}': {}", id, points);
+      logger.info("Points calculated for receipt with ID '{}': '{}'", id, points);
 
       // Return the points as a response
       return ResponseEntity.ok(Map.of("points", points));
     } catch (Exception e) {
-      logger.error("Failed to calculate points for receipt: {}", e.getMessage());
+      logger.error("Failed to calculate points for receipt '{}' due to '{}'", id, e.getMessage());
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
           .body(Map.of("error", "Failed to calculate points for the receipt"));
     }

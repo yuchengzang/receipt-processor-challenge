@@ -8,6 +8,99 @@ Provide any instructions required to run your application.
 
 Data does not need to persist when your application stops. It is sufficient to store information in memory. There are too many different database solutions, we will not be installing a database on our system when testing your application.
 
+## How to Run The Application
+
+### Prerequisites
+
+To run this project, ensure you have the following installed:
+- Docker
+- Java 17 (Only required if running *without* Docker)
+- Maven (Only required  if building manually *without* Docker)
+
+### Cloning the Repository
+
+1. **Clone the Repository**: 
+   Use the following command to clone the repository to your local machine:
+    ```bash
+    git clone https://github.com/yuchengzang/receipt-processor-challenge.git
+    ```
+
+2. **Navigate to the Project Directory:**
+   ```bash
+   cd receipt-processor-challenge
+   ```
+
+### Running with Docker
+
+1. **Build the Docker Image**:
+   From the project root directory, build the Docker image using:
+    ```bash
+    docker build -t receipt-processor .
+    ```
+
+2. **Run the Docker Container:**
+   Start the container by running:
+    ```bash
+    docker run -p 8080:8080 receipt-processor
+    ```
+
+3. **Access the Application:**
+  
+   The application will be available at http://localhost:8080.
+   You can use tools like Postman or `curl` to interact with the API.
+   To stop the application, use `Ctrl + C` in the terminal.
+
+4. **Run The Unit Tests (Optional)** 
+  
+    To run the unit tests directly via Docker, use:
+    ```bash
+    docker run --rm -v "$(pwd)":/app -w /app maven:3.8.6-eclipse-temurin-17 mvn clean test
+    ```
+
+    Alternatively, if you want to run the tests using Maven locally, use
+    ```bash
+    ./mvnw test
+    ```
+
+## Notes to the Grader
+
+### Development Process
+- This project was developed over multiple days. Progress was incremental due to schoolwork and illness, which occasionally limited time availability.
+- Throughout the development, emphasis was placed on clean code, extensive testing, and adhering to the documented API specification.
+
+### Key Implementation Details
+1. **Unit Tests**:
+   - A total of **124 unit tests** were written to ensure the correctness and robustness of the application.
+   - To run the tests, use:
+     ```bash
+     ./mvnw test
+     ```
+
+2. **Concurrency**:
+   - The application uses a `ConcurrentHashMap` for in-memory storage to handle potential concurrent access during receipt processing.
+
+3. **Monetary Calculations**:
+   - `BigDecimal` is used for monetary calculations to ensure precision and accuracy.
+
+4. **Handling Total Price**:
+   - The application does not validate whether the sum of all item prices equals the total amount in the receipt. This decision was made to accommodate scenarios involving **tips, taxes, or discounts**, which are typically not itemized.
+
+5. **Date and Time**:
+   - The application uses `LocalDate` and `LocalTime` for processing dates and times because the incoming JSON does not include timezone information. This design choice simplifies parsing but can be extended to include timezone support if needed.
+
+6. **Logging**:
+   - Extensive logging has been implemented to aid in debugging and provide clear feedback during runtime. Logs include details for validation errors, successful operations, and unexpected issues.
+
+7. **Points Calculation**:
+   - Points are **not stored** as a member of the `Receipt` class. This decision allows flexibility to update the points calculation rules without modifying the data structure.
+   - While points are calculated on-demand, caching can be implemented in the future to improve performance.
+
+### Tools and Assistance
+- **AI Tools**:
+   - Testers and parts of the code were generated with assistance from **GitHub Copilot** and **ChatGPT**.
+   - These tools were used for brainstorming, generating test cases, and validating ideas. All outputs were manually reviewed and adapted as necessary.
+
+
 ## Language Selection
 
 You can assume our engineers have Go and Docker installed to run your application. Go is our preferred language, but it is not a requirement for this exercise. If you are not using Go, include a Dockerized setup to run the code. You should also provide detailed instructions if your Docker file requires any additional configuration to run the application.

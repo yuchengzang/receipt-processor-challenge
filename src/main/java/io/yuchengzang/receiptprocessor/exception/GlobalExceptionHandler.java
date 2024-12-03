@@ -26,6 +26,31 @@ public class GlobalExceptionHandler {
   private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
   /**
+   * Handles exceptions for requests to non-existing resources.
+   *
+   * This method catches exceptions related to accessing non-existing API endpoints
+   * or static resources and responds with a NOT_FOUND (404) status.
+   *
+   * @param ex the NoResourceFoundException to handle
+   * @return a ResponseEntity containing the error message with a NOT_FOUND (404) status
+   */
+  @ExceptionHandler(org.springframework.web.servlet.resource.NoResourceFoundException.class)
+  public ResponseEntity<Map<String, String>> handleNoResourceFoundException(
+      org.springframework.web.servlet.resource.NoResourceFoundException ex) {
+
+    // Log the error
+    logger.warn("Requested resource not found: '{}'", ex.getMessage());
+
+    // Create an error response with a meaningful message
+    Map<String, String> errorResponse = new HashMap<>();
+    errorResponse.put("error", "The requested resource could not be found.");
+
+    // Return a NOT_FOUND response
+    return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+  }
+
+
+  /**
    * Handles validation exceptions for @Valid @RequestBody objects.
    *
    * When the application receives a request with invalid data (e.g., missing fields), this method
